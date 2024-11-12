@@ -1,0 +1,39 @@
+/* frontend/src/styles/Footer.css */
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.footer {
+  margin-top: auto;
+  background-color: #f8f9fa;
+  text-align: center;
+  padding: 5px 0;
+  border-top: 1px solid #eaeaea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 14px;
+  color: #6c757d;
+}
+
+.footer a {
+  color: #007bff;
+  font-size: 14px;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
