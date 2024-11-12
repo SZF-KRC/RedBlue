@@ -105,7 +105,7 @@ The project is divided into two main parts: the **backend** (Django) and the **f
 ### Backend:
 - **Django**: Web framework for backend logic and API.
 - **Django REST Framework**: For building the API.
-- **SQLite**: Default database (can be replaced with PostgreSQL or MySQL).
+- **MySQL**: Database .
 
 ### Frontend:
 - **React**: JavaScript library for building the user interface.
