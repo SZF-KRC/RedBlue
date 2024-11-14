@@ -31,7 +31,7 @@ function PrivacyPolicy() {
       <p>
         You have the right to access, update, or delete the personal information
         we hold about you. To exercise these rights, please contact us at
-        [Insert Contact Information].
+        [info@redblueacademy.com].
       </p>
 
       <h2 className="mt-4">Changes to This Policy</h2>
