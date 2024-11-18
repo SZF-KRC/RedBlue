@@ -28,11 +28,13 @@ function Calendar() {
   const [showOrderButton, setShowOrderButton] = useState(false);
   const [showManual, setShowManual] = useState(false);
 
+  // Effect to fetch study hours and events when the component mounts
   useEffect(() => {
     fetchStudyHours();
     loadEvents();
   }, []);
 
+  // Fetches the total and available study hours for the logged-in user
   const fetchStudyHours = async () => {
     try {
       const response = await api.get("/api/user/study_hours/");
@@ -45,6 +47,7 @@ function Calendar() {
     }
   };
 
+  // Loads events from the server and processes them for the calendar
   const loadEvents = async () => {
     try {
       const response = await api.get("/api/reservations/");
@@ -68,8 +71,9 @@ function Calendar() {
     }
   };
 
+  // Handles user clicking on a calendar date to create a new reservation
   const handleDateClick = async (arg) => {
-    // We will check remaining Hours only if there are pending reservations, otherwise we will use study Hours
+    // check remaining Hours only if there are pending reservations, otherwise we will use study Hours
     const hoursToCheck = showRemainingHours ? remainingHours : studyHours;
   
     if (hoursToCheck <= 0) {
@@ -92,7 +96,7 @@ function Calendar() {
     }
   };
   
-
+// Handles deleting a reservation by event ID
   const handleDelete = async (eventId) => {
     try {
       await api.delete(`/api/reservation/${eventId}/`);
@@ -103,6 +107,7 @@ function Calendar() {
     }
   };
 
+  // Handles submitting an order for more study hour
   const handleOrderSubmit = async () => {
     try {
       await api.post("/api/order/update/", { hours: orderHours });
@@ -115,6 +120,7 @@ function Calendar() {
     }
   };
 
+  // Renders the content for calendar events
   const renderEventContent = (eventInfo) => (
     <div>
       <b>{eventInfo.timeText}</b>
@@ -138,6 +144,7 @@ function Calendar() {
     </div>
   );
 
+  // Clears all rejected events from the calendar
   const clearRejectedEvents = async () => {
     try {
       await api.post("/api/reservations/hide_rejected/");
@@ -149,6 +156,7 @@ function Calendar() {
     }
   };
 
+  // Content for the user manual
   const manualContent = (
     <div>
       <h2>Manual for Using the Calendar</h2>
