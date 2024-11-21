@@ -100,4 +100,3 @@ class ReservationAdmin(admin.ModelAdmin):
     @admin.action(description='Reject selected reservations')
     def reject_reservations(self, request, queryset):
         queryset.update(status='rejected')  # Update the status of selected reservations to 'rejected'
-

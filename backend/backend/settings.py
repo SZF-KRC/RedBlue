@@ -99,17 +99,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-# backend/backend/settings.py
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv("EMAIL_HOST")  # Provider's SMTP server
+EMAIL_PORT = os.getenv("EMAIL_PORT")  # 587 for TLS 
+EMAIL_USE_TLS = True  # Using TLS encryption 
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")  # my email address
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")  # Gmail app password
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")  # Default sender
 
 DATABASES = {
     'default': {

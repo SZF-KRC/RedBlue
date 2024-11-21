@@ -47,4 +47,3 @@ class OrderSerializer(serializers.ModelSerializer):
         if not data.get('gdpr_accepted'):
             raise serializers.ValidationError("You must accept the GDPR policy.")
         return data
-
