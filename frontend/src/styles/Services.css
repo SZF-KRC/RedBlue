@@ -1,20 +1,51 @@
 /* frontend/src/styles/Services.css */
 
-h1 {
-    font-size: 2.5rem;
-    font-weight: bold;
-  }
-  
-  h2 {
-    font-size: 1.75rem;
-  }
-  
-  p {
-    font-size: 1rem;
-    line-height: 1.6;
-  }
-  
-  img {
-    border-radius: 8px;
-  }
-  
+.container {
+  padding-top: 120px; 
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 40px;
+  color: #333;
+}
+
+h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #555;
+}
+
+img {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Gradient styles for programming language highlights */
+.highlight-java {
+  background: linear-gradient(to right, #f51919, #720101);
+  background-clip: text; 
+  -webkit-background-clip: text; 
+  -webkit-text-fill-color: transparent; 
+}
+
+.highlight-python {
+  background: linear-gradient(to right, #4682B4, #0232c4);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.highlight-csharp {
+  background: linear-gradient(to right, #8B008B, #4B0082);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+

@@ -9,7 +9,7 @@ import professionalImage from "../pictures/pay9.jpg";
 
 function PriceList() {
   return (
-    <div className="container py-5">
+    <div className="price-list-container">
       <h1 className="text-center mb-4">"Learn more, pay less!"</h1>
       <p className="text-center mb-5">
         "We reward diligent students by allowing them to pay less as they learn more. 

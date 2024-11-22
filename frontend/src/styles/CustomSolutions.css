@@ -1,40 +1,65 @@
 /* frontend/src/styles/CustomSolutions.css */
 
 .container {
-    max-width: 1140px;
-    margin: 0 auto;
-    padding-top: 80px; 
-    padding-bottom: 60px; 
-  }
-  
-  h1 {
-    font-size: 2.5rem;
-    font-weight: bold;
-  }
-  
-  p {
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 20px;
-  }
-  
-  .price {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #007bff;
-  }
-  
-  img {
-    border-radius: 8px;
-  }
-  
-  /* Set fixed size for images */
-  .solution-image {
-    width: 100%; 
-    max-width: 300px; 
-    height: 200px; 
-    object-fit: cover; 
-    border-radius: 8px;
-    margin: 0 auto;
-  }
-  
+  max-width: 1140px;
+  margin: 0 auto;
+  padding-top: 80px;
+  padding-bottom: 60px;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  color: #555;
+  text-align: center;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+  font-size: 1rem;
+  margin: 10px 0;
+}
+
+ul li {
+  margin-bottom: 5px;
+}
+
+.price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.service-description {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 10px;
+}
+
+img {
+  border-radius: 8px;
+}
+
+/* Set fixed size for images */
+.solution-image {
+  width: 100%;
+  max-width: 300px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 0 auto;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}

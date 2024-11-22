@@ -28,7 +28,7 @@
     max-width: 600px;
     margin: 0 auto;
     text-align: center;
-    background-color: rgba(0, 0, 0, 0.5); 
+    background-color: rgba(163, 158, 158, 0.5); 
     padding: 20px;
     border-radius: 8px;
   }
@@ -37,6 +37,7 @@
     font-size: 48px;
     margin-bottom: 20px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); 
+    color: #ece7e5;
   }
   
   .hero-section ul {
@@ -64,14 +65,29 @@
     background-color: rgba(255, 255, 255, 0.2); 
   }
   
-  /* Section 2 */
-  .community-section .col-md-4 {
-    background-color: #f8f9fa; 
-    padding: 20px;
-    border-radius: 8px;
-    color: rgb(0, 0, 0);
-    margin-bottom: 20px;
-  }
+/* Section 2 */
+.community-section .col-md-4 {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  color: rgb(0, 0, 0);
+  margin-bottom: 20px;
+  text-align: center; 
+}
+
+.community-section h2 {
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.community-section p {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-top: 0; 
+  margin-bottom: 0; 
+}
+
   
   /* Section 3  */
   .programming-languages-section {

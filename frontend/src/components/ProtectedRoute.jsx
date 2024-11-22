@@ -1,13 +1,14 @@
 // frontend/src/components/ProtectedRoute.jsx
 
 /*
-ProtectedRoute component to control access based on user authentication and order status:
+ProtectedRoute component to manage user access based on authentication and order status:
 1. Redirects unauthenticated users to the login page.
-2. Redirects users with pending orders to the order pending page.
-3. Redirects users without completed orders to the order page, unless order is pending.
-4. Redirects users with completed orders away from the order page to the calendar.
+2. Redirects users with their first pending order (and no completed orders) to the "Order Pending" page.
+3. Redirects users with no completed orders and no pending orders to the "Order" page.
+4. Redirects users with completed orders away from the "Order" page to the calendar.
+5. Allows users with completed orders or valid pending orders to access protected routes.
 
-Ensures only authorized users can access certain pages, based on their order status.
+This component ensures users are routed to appropriate pages based on their order and authentication status.
 */
 
 import React from "react";
@@ -23,23 +24,25 @@ function ProtectedRoute({ children }) {
     return <Navigate to="/login" replace />;
   }
 
-  // If the order is in "pending" status, redirect to the pending order page
-  if (orderPending && location.pathname !== "/order-pending") {
+  // If the order is pending and the user has no completed orders, redirect to order-pending
+  if (orderPending && !orderCompleted && location.pathname !== "/order-pending") {
     return <Navigate to="/order-pending" replace />;
   }
 
-  // If the user has not completed the order and the page is not "/order", redirect to the order page
+  // If the user has no completed orders and no pending orders, redirect to the order page
   if (!orderCompleted && !orderPending && location.pathname !== "/order") {
     return <Navigate to="/order" replace />;
   }
 
-  // If the user is authenticated, the order is completed, but they are on the order page, redirect to the calendar
+  // If the user has completed an order and is on the order page, redirect to the calendar
   if (orderCompleted && location.pathname === "/order") {
     return <Navigate to="/calendar" replace />;
   }
 
+  // If all conditions are satisfied, render the children components
   return children;
 }
 
 export default ProtectedRoute;
+
 

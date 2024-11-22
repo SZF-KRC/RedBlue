@@ -49,6 +49,16 @@ header {
   .nav-item span {
     color: black; 
   }
+
+  .nav-item .calendar {
+    background: linear-gradient(to right,#8B0000, #00008B); 
+    -webkit-background-clip: text; 
+    background-clip: text;
+    -webkit-text-fill-color: transparent; 
+    font-size: 18px; 
+    font-weight: 500; 
+  }
+  
   
   .nav-item .hello-gradient {
     background: linear-gradient(to right, red, #8B0000); 

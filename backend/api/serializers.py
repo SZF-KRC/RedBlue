@@ -1,12 +1,13 @@
 # backend/api/serializers.py
 '''
-Serializers for API data conversion:
-1. UserSerializer: Manages user creation with write-only password for secure handling.
-2. ReservationSerializer: Serializes reservation data with fields for timing, status, and read-only student info.
-3. OrderSerializer: Serializes order data with validation for terms and GDPR acceptance.
+Serializers for API data conversion and validation:
+1. UserSerializer: Handles secure user creation with a write-only password and proper hashing.
+2. ReservationSerializer: Serializes reservation data, ensuring read-only access to the student and created_at fields.
+3. OrderSerializer: Manages order data serialization and enforces validation for unique email addresses, acceptance of terms, and GDPR policies.
 
-These serializers enable model data to be converted to and from JSON for API interactions.
+These serializers enable secure and reliable data conversion between Django models and JSON, ensuring validation and consistency for API interactions.
 '''
+
 
 from django.contrib.auth.models import User
 from rest_framework import serializers
@@ -39,11 +40,19 @@ class OrderSerializer(serializers.ModelSerializer):
             'address', 'hours', 'terms_accepted', 'gdpr_accepted', 'created_at', 'status', 'approved'
         ]
         read_only_fields = ['student', 'created_at']
-
+    
+    # Check if the email is already in use
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email address is already in use. Please use a different one.")
+        return value
+    
+    # Verification that the user has confirmed the business conditions and GDPR
     def validate(self, data):
-       # Verification that the user has confirmed the business conditions and GDPR
         if not data.get('terms_accepted'):
             raise serializers.ValidationError("You must accept the terms and conditions.")
         if not data.get('gdpr_accepted'):
             raise serializers.ValidationError("You must accept the GDPR policy.")
         return data
+
+

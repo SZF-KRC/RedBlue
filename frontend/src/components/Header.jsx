@@ -50,7 +50,7 @@ function Header() {
           {isAuthenticated ? (
             <>
               <li className="nav-item">
-                <Link to="/calendar" className="nav-link">Calendar</Link>
+                <Link to="/calendar" className="calendar">Calendar</Link>
               </li>
               <li className="nav-item">
                 <button className="nav-link btn btn-link" onClick={handleLogout}>Logout</button>

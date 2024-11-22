@@ -1,33 +1,40 @@
 # backend/api/admin.py
 
 '''
-Admin panel for managing orders, user profiles, and reservations in a learning platform. 
-It allows administrators to approve or reject orders and reservations, and track 
-or modify study hours for each user. Key functionalities include:
+Admin panel for managing the core functionalities of a learning platform. 
+It provides tools for administrators to efficiently handle user orders, reservations, and study hours, 
+ensuring smooth operations. The key features include:
 
-1. Order Management: The `OrderAdmin` class displays order details and provides actions to approve 
-   or reject orders. When an order is approved, the user's study hours in `UserProfile` are updated 
-   accordingly. The order status is set to "approved," and a confirmation message is displayed in the 
-   admin panel.
+1. **Order Management**:
+   - `OrderAdmin`: Enables viewing, approving, and rejecting orders.
+   - Automatically updates user profiles with approved study hours.
+   - Sends email notifications to students upon order approval, informing them of their updated study hours.
+   - Custom actions like bulk approval or rejection of pending orders streamline management.
 
-2. Active User Tracking: The `ActiveUserAdmin` class registers the `ActiveUser` model in the admin 
-   interface, showing the user along with their last login time.
+2. **Active User Tracking**:
+   - `ActiveUserAdmin`: Displays a list of active users with their last login times.
 
-3. User Profile Management: The `UserProfileAdmin` class displays user profiles, including study 
-   hours, which can be edited directly from the list view for quick modifications.
+3. **User Profile Management**:
+   - `UserProfileAdmin`: Allows administrators to view and edit user study hours directly from the admin list view.
+   - Ensures easy monitoring and quick adjustments to user profiles.
 
-4. Reservation Management: The `ReservationAdmin` class registers the `Reservation` model, 
-   allowing admin actions to approve or reject reservations. When approving, it checks if the user has 
-   enough study hours; if so, it approves the reservation, deducts one hour, and updates the profile. 
-   Error handling is implemented for cases where users have insufficient hours or lack a `UserProfile`.
+4. **Reservation Management**:
+   - `ReservationAdmin`: Handles student reservations with options to approve or reject them.
+   - Automatically deducts study hours from users' profiles upon approval, ensuring accurate hour tracking.
+   - Includes error handling for cases where users lack sufficient hours or a valid user profile.
 
-5. Custom Actions and Error Handling: Custom actions ensure only eligible records are updated 
-   (e.g., pending orders or unapproved reservations) and provide informative messages for successful 
-   and unsuccessful actions, enhancing the overall functionality and reliability of the admin panel.
+5. **Custom Actions**:
+   - Tailored actions ensure only eligible records are processed (e.g., pending orders or unapproved reservations).
+   - Informative messages are displayed for successful and unsuccessful actions, enhancing admin efficiency.
+
+This admin configuration centralizes control over orders, user profiles, and reservations, 
+providing a robust and user-friendly interface for administrators.
 '''
+
 
 from django.contrib import admin
 from .models import ActiveUser, UserProfile, Reservation, Order
+from django.core.mail import send_mail
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
@@ -42,12 +49,38 @@ class OrderAdmin(admin.ModelAdmin):
             if order.status == 'pending':  
                 order.status = 'approved'
                 order.save()
-                
+
                 # Updating study hours in UserProfile
                 user_profile, created = UserProfile.objects.get_or_create(user=order.student)
                 user_profile.study_hours += order.hours 
                 user_profile.order_completed = True
                 user_profile.save()
+
+                # Send confirmation email to the student
+                subject = "Confirmation of Your Study Hour Order"
+                message = (
+                    f"Dear {order.student.first_name},\n\n"
+                    f"We are pleased to inform you that your order for {order.hours} study hours has been successfully approved. "
+                    f"You now have {user_profile.study_hours} available study hours in your account.\n\n"
+                    f"We wish you great success in your studies!\n\n"
+                    f"Best regards,\n"
+                    f"The RedBlue Academy Team"
+                )
+                try:
+                    send_mail(
+                        subject,
+                        message,
+                        'info@redblueacademy.com',  # From email
+                        [order.student.email],  # To email
+                        fail_silently=False,
+                    )
+                    self.message_user(request, f"A confirmation email has been sent to the student. {order.student.username}.")
+                except Exception as e:
+                    self.message_user(
+                        request,
+                        f"Error sending email to student {order.student.username}: {str(e)}",
+                        level="error"
+                    )
                 
                 self.message_user(request, f"Order for {order.student.username} has been approved and hours added.")
 
@@ -100,3 +133,5 @@ class ReservationAdmin(admin.ModelAdmin):
     @admin.action(description='Reject selected reservations')
     def reject_reservations(self, request, queryset):
         queryset.update(status='rejected')  # Update the status of selected reservations to 'rejected'
+
+

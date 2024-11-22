@@ -1,32 +1,48 @@
 /* frontend/src/styles/PriceList.css */
 
+.price-list-container {
+  padding-top: 120px; 
+  padding-bottom: 60px;
+  max-width: 1140px; 
+  margin: 0 auto; 
+}
+
 h1 {
-    font-size: 2.5rem;
-    font-weight: bold;
-  }
-  
-  .price {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #007bff;
-  }
-  
-  p {
-    font-size: 1rem;
-    line-height: 1.6;
-  }
-  
-  img {
-    border-radius: 8px;
-  }
-  
-  .price-image {
-    width: 100%; 
-    max-width: 250px; 
-    height: 200px; 
-    object-fit: cover; 
-    border-radius: 8px;
-    margin: 0 auto;
-  }
-  
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 40px;
+}
+
+.price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #007bff;
+}
+
+p {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+img {
+  border-radius: 8px;
+}
+
+.price-image {
+  width: 100%;
+  max-width: 250px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 0 auto;
+}
+
+.btn-success {
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+
   

@@ -1,13 +1,16 @@
 // frontend/src/components/AuthContext.jsx
 
 /*
-Manages user authentication and order status:
-1. AuthProvider: Tracks authentication status, username, and order status (completed/pending) using context.
-2. Login & Logout: Handles token storage, user login tracking, and session management.
-3. Token Handling: Validates and refreshes access tokens, with an auto-refresh every 5 minutes.
+Manages user authentication, token handling, and order status:
+1. AuthProvider: Provides authentication state, username tracking, and order status (completed/pending) across the app.
+2. Login & Logout: Handles token storage, user session management, and tracks login events.
+3. Token Handling: Validates and refreshes access tokens, with periodic auto-refresh every 5 minutes.
+4. Order Status: Fetches and updates the status of user orders (completed or pending) from the server.
+5. Context Integration: Exposes authentication and order state via the AuthContext for use throughout the application.
 
-This component centralizes user authentication and order state for use across the app.
+This component centralizes authentication, token management, and user order state for seamless integration across the app.
 */
+
 
 import React, { createContext, useState, useContext, useEffect } from "react";
 import * as jwtDecode from "jwt-decode";
@@ -17,17 +20,11 @@ import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  // State to track if the user is authenticated
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // State to track if the user is authenticated
+  const [username, setUsername] = useState(localStorage.getItem("USERNAME")); // State to store the logged-in username
+  const [orderCompleted, setOrderCompleted] = useState(false); // State to track whether the user's order is completed
+  const [orderPending, setOrderPending] = useState(false); // State to track whether the user's order is pending
 
-  // State to store the logged-in username
-  const [username, setUsername] = useState(localStorage.getItem("USERNAME"));
-
-  // State to track whether the user's order is completed
-  const [orderCompleted, setOrderCompleted] = useState(false);
-
-  // State to track whether the user's order is pending
-  const [orderPending, setOrderPending] = useState(false);
 
   // Effect to initialize authentication state and fetch order status on component mount
   useEffect(() => {
@@ -47,15 +44,18 @@ export const AuthProvider = ({ children }) => {
   // Fetches the user's order status (completed or pending) from the server
   const fetchOrderStatus = async () => {
     try {
-      const res = await api.get("/api/user/profile/"); 
+      const res = await api.get("/api/user/profile/");
       setOrderCompleted(res.data.order_completed);
-      setOrderPending(res.data.order_pending);
+  
+      // If there is an approved order, we ignore "pending"
+      setOrderPending(res.data.order_pending && !res.data.order_completed);
     } catch (error) {
       console.error("Failed to fetch order status:", error);
       setOrderCompleted(false);
       setOrderPending(false);
     }
   };
+  
   
   // Handles user login: sets authentication state, stores tokens, and tracks login
   const login = async (username, accessToken, refreshToken) => {
@@ -68,7 +68,6 @@ export const AuthProvider = ({ children }) => {
 
     try {
       const res = await api.post("/api/user/login/track/");
-      console.log("Track login response:", res.data);
       fetchOrderStatus();
     } catch (error) {
       console.error("Failed to track login:", error);
@@ -141,3 +140,7 @@ export const AuthProvider = ({ children }) => {
 
 // Custom hook to access the AuthContext
 export const useAuth = () => useContext(AuthContext);
+
+
+
+

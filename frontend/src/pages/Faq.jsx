@@ -5,7 +5,7 @@ import "../styles/Faq.css";
 
 function Faq() {
   return (
-    <div className="container py-5"> 
+    <div className="price-list-container"> 
       <h1 className="text-center mb-4">Frequently Asked Questions</h1>
       <p className="text-center mb-5">
         Get answers to the most common questions about our services and professional packages.

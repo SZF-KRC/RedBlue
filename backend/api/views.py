@@ -1,48 +1,50 @@
 # backend/api/views.py
 
 '''
-Defines views for handling API requests:
-1. User and order management: Create orders, update profiles, and track active users.
-2. Reservation handling: Create, delete, list, and update reservation statuses, with admin permissions.
-3. Study hours retrieval: Provides available study hours for logged-in users.
+Handles API requests for user authentication, order management, reservation processing, 
+and study hours tracking within the learning platform. Key functionalities include:
 
-Each view includes permissions for secure access and error handling to support the platform's core functionalities.
+1. **User and Profile Management**:
+   - `CreateUserView`: Allows new user registration.
+   - `get_user_profile`: Fetches user-specific details like order status (completed or pending).
+
+2. **Order Management**:
+   - `create_order` and `create_hour_order`: Handle order creation for study hours with terms validation.
+   - Automatically updates user details and manages pending or approved order statuses.
+
+3. **Reservation Handling**:
+   - `create_reservation`: Allows users to book lessons with a default "pending" status.
+   - `delete_reservation`: Enables users to delete their pending reservations.
+   - `list_reservations`: Lists reservations; admins can view all, while users see their own unhidden reservations.
+   - `update_reservation_status`: Admin functionality to approve or reject reservations with automatic deduction of study hours on approval.
+   - `hide_rejected_reservations`: Hides rejected reservations from the user's view.
+
+4. **Study Hours Management**:
+   - `get_study_hours`: Retrieves available study hours for logged-in users.
+   - Updates study hours upon order approval or reservation processing.
+
+5. **Active User Tracking**:
+   - `add_to_active_users_view`: Tracks user login activity by managing `ActiveUser` records.
+
+6. **Error Handling**:
+   - Implements comprehensive error messages and status codes for better user experience.
+   - Handles exceptions like insufficient study hours, invalid data, or missing profiles.
+
+This file consolidates all core API endpoints, ensuring seamless interaction between the backend 
+and the platform for managing orders, reservations, and user profiles.
 '''
+
 
 from django.contrib.auth.models import User
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from .serializers import UserSerializer, ReservationSerializer, OrderSerializer
-
+from rest_framework.exceptions import ValidationError
 from .models import ActiveUser, UserProfile, Reservation, Order
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def create_order(request):
-    data = request.data
-    serializer = OrderSerializer(data=data)
-    
-    if serializer.is_valid():
-        try:
-            # Save the order with `approved=False`
-            order = serializer.save(student=request.user, approved=False)
-
-            # Update data in the User model
-            user = request.user
-            user.first_name = data.get('first_name', '')
-            user.last_name = data.get('last_name', '')
-            user.email = data.get('email', '')
-            user.save()
-
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-        except Exception as e:
-            print(f"Error creating order: {e}")
-            return Response({"error": "An internal server error occurred while processing the order."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+from django.core.mail import send_mail
+from django.conf import settings
 
 # Class-based view for creating a new user
 class CreateUserView(generics.CreateAPIView):
@@ -77,6 +79,8 @@ def delete_reservation(request, pk):
             return Response({"error": "Only pending reservations can be deleted."}, status=status.HTTP_403_FORBIDDEN)
     except Reservation.DoesNotExist:
         return Response({"error": "Reservation not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -154,21 +158,60 @@ def add_to_active_users_view(request):
         return Response({"status": "User tracked as active"})
     return Response({"status": "Unauthorized"}, status=401)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_order(request):
+    data = request.data
+    serializer = OrderSerializer(data=data)
+    
+    if serializer.is_valid():
+        try:
+            # Save the order with `approved=False`
+            order = serializer.save(student=request.user, approved=False)
+
+            # Update data in the User model
+            user = request.user
+            user.first_name = data.get('first_name', '')
+            user.last_name = data.get('last_name', '')
+            user.email = data.get('email', '')
+            user.save()
+
+            # Send welcome email
+            send_welcome_email(order)
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        except Exception as e:
+            print(f"Error creating order: {e}")
+            return Response({"error": "An internal server error occurred while processing the order."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_profile(request):
     try:
+        # Checking if a user has an approved order
+        approved_order_exists = Order.objects.filter(student=request.user, status='approved').exists()
+
+        # Checking if there is a new "pending" order
         pending_order_exists = Order.objects.filter(student=request.user, status='pending').exists()
-        completed_order_exists = Order.objects.filter(student=request.user, status='approved').exists()
+
+        # If there is an approved order but also a new "pending" order, prioritize the approved one.
+        order_pending = pending_order_exists and not approved_order_exists
+
         profile_data = {
             "username": request.user.username,
-            "order_completed": completed_order_exists,
-            "order_pending": pending_order_exists,
+            "order_completed": approved_order_exists,
+            "order_pending": order_pending,
         }
         return Response(profile_data, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
+
+# New order for hours   
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_hour_order(request):
@@ -200,5 +243,51 @@ def create_hour_order(request):
     except Exception as e:
         print("Error creating order:", e)
         return Response({"error": "Failed to create order."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
 
+def send_welcome_email(order):
+    # Calculate the price per hour and total price
+    if order.hours >= 160:
+        price_per_hour = 9
+    elif order.hours >= 30:
+        price_per_hour = 12
+    else:
+        price_per_hour = 24
+
+    total_price = order.hours * price_per_hour
+
+    # Prepare the email content
+    subject = "Welcome to Our Learning Platform!"
+    message = f"""
+    Dear {order.first_name} {order.last_name},
+
+    Thank you for your first order on our platform! Here are the details of your order:
+
+    - Name: {order.first_name} {order.last_name}
+    - Email: {order.email}
+    - Ordered Hours: {order.hours}
+    - Price per Hour: {price_per_hour} EUR (including VAT)
+    - Total Price: {total_price} EUR (including VAT)
+
+    Please transfer the payment to the following account:
+
+    Account Number: 123456789
+    Bank Name: XYZ Bank
+    IBAN: SK12345678901234567890
+    SWIFT/BIC: XYZBSKBB
+
+    Once the payment is received, your order will be approved, and you can start booking your lessons.
+
+    Best regards,
+    The Learning Platform Team
+    """
+
+    from_email = settings.DEFAULT_FROM_EMAIL
+    recipient_list = [order.email]
+
+    try:
+        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+        print(f"Welcome email sent to {order.email}")
+    except Exception as e:
+        print(f"Error sending welcome email: {e}")
 

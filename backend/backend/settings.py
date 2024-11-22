@@ -104,7 +104,7 @@ EMAIL_HOST = os.getenv("EMAIL_HOST")  # Provider's SMTP server
 EMAIL_PORT = os.getenv("EMAIL_PORT")  # 587 for TLS 
 EMAIL_USE_TLS = True  # Using TLS encryption 
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")  # my email address
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")  # Gmail app password
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")  # password
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")  # Default sender
 
 DATABASES = {

@@ -1,5 +1,13 @@
 /* frontend/src/styles/PrivacyPolicy.css */
 
+.main-policy-container {
+  padding-top: 120px; 
+  padding-bottom: 60px;
+  max-width: 1140px; 
+  margin: 0 auto; 
+}
+
+
 h1 {
     font-size: 2.5rem;
     font-weight: bold;

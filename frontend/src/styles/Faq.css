@@ -1,22 +1,33 @@
 /* frontend/src/styles/Faq.css */
 
+.price-list-container {
+  padding-top: 120px; 
+  padding-bottom: 60px;
+  max-width: 1140px; 
+  margin: 0 auto; 
+}
+
 h1 {
     font-size: 2.5rem;
     font-weight: bold;
-  }
+    text-align: center; 
+}
   
-  h3 {
+h3 {
     font-size: 1.25rem;
     font-weight: bold;
     margin-bottom: 10px;
-  }
+    text-align: left; 
+}
   
-  p {
+p {
     font-size: 1rem;
     line-height: 1.6;
-  }
+    text-align: left; 
+}
   
-  .faq-item {
+.faq-item {
     margin-bottom: 30px; 
-  }
+}
+
   
