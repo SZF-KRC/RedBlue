@@ -30,7 +30,7 @@ class ReservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reservation
         fields = ['id', 'student', 'start_time', 'end_time', 'status', 'created_at']  # Exposes reservation fields
-        read_only_fields = ['student', 'created_at']  # Fields student and created_at are read-only
+        read_only_fields = ['student', 'created_at', 'hidden_for_student']  # Fields student and created_at are read-only
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:

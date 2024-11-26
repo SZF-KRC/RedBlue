@@ -54,6 +54,12 @@ function Calendar() {
     setRemainingHours(Math.max(studyHours - pendingReservationsCount, 0));
     setShowRemainingHours(pendingReservationsCount > 0);
   }, [events, studyHours]);
+
+  useEffect(() => {
+    const hasRejected = events.some((event) => event.color === "red");
+    setHasRejectedEvents(hasRejected);
+  }, [events]);
+  
   
 
   // Fetch total study hours from the API and initialize state

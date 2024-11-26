@@ -236,6 +236,7 @@ def create_hour_order(request):
             gdpr_accepted=gdpr_accepted
         )
         serializer = OrderSerializer(order)
+        send_email_new_order(order)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     except ValueError:
@@ -245,8 +246,8 @@ def create_hour_order(request):
         return Response({"error": "Failed to create order."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
-def send_welcome_email(order):
-    # Calculate the price per hour and total price
+def calculate_price(order):
+    """Calculate price per hour and total price based on the number of hours."""
     if order.hours >= 160:
         price_per_hour = 9
     elif order.hours >= 30:
@@ -255,17 +256,43 @@ def send_welcome_email(order):
         price_per_hour = 24
 
     total_price = order.hours * price_per_hour
+    return price_per_hour, total_price
+
+
+def send_email(order, subject, message_template):
+    """Send an email based on the provided subject and message template."""
+    price_per_hour, total_price = calculate_price(order)
 
     # Prepare the email content
+    message = message_template.format(
+        first_name=order.first_name,
+        last_name=order.last_name,
+        email=order.email,
+        hours=order.hours,
+        price_per_hour=price_per_hour,
+        total_price=total_price
+    )
+
+    from_email = settings.DEFAULT_FROM_EMAIL
+    recipient_list = [order.email]
+
+    try:
+        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+        print(f"Email sent to {order.email} with subject: {subject}")
+    except Exception as e:
+        print(f"Error sending email to {order.email}: {e}")
+
+
+def send_welcome_email(order):
     subject = "Welcome to Our Learning Platform!"
-    message = f"""
-    Dear {order.first_name} {order.last_name},
+    message_template = """
+    Dear {first_name} {last_name},
 
     Thank you for your first order on our platform! Here are the details of your order:
 
-    - Name: {order.first_name} {order.last_name}
-    - Email: {order.email}
-    - Ordered Hours: {order.hours}
+    - Name: {first_name} {last_name}
+    - Email: {email}
+    - Ordered Hours: {hours}
     - Price per Hour: {price_per_hour} EUR (including VAT)
     - Total Price: {total_price} EUR (including VAT)
 
@@ -275,19 +302,42 @@ def send_welcome_email(order):
     Bank Name: XYZ Bank
     IBAN: SK12345678901234567890
     SWIFT/BIC: XYZBSKBB
+    Reference: {email}
 
     Once the payment is received, your order will be approved, and you can start booking your lessons.
 
     Best regards,
-    The Learning Platform Team
+    The RedBlue Academy Team
     """
+    send_email(order, subject, message_template)
 
-    from_email = settings.DEFAULT_FROM_EMAIL
-    recipient_list = [order.email]
 
-    try:
-        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
-        print(f"Welcome email sent to {order.email}")
-    except Exception as e:
-        print(f"Error sending welcome email: {e}")
+def send_email_new_order(order):
+    subject = "Your New Order"
+    message_template = """
+    Dear {first_name} {last_name},
+
+    Thank you for ordering additional teaching hours! We look forward to continuing your journey with us as you work towards a career in programming. Here are the details of your order:
+
+    - Name: {first_name} {last_name}
+    - Email: {email}
+    - Ordered Hours: {hours}
+    - Price per Hour: {price_per_hour} EUR (including VAT)
+    - Total Price: {total_price} EUR (including VAT)
+
+    Please transfer the payment to the following account:
+
+    Account Number: 123456789
+    Bank Name: XYZ Bank
+    IBAN: SK12345678901234567890
+    SWIFT/BIC: XYZBSKBB
+    Reference: {email}
+
+    Once the payment is received, your order will be approved, and you can continue booking your lessons as usual.
+
+    Best regards,
+    The RedBlue Academy Team
+    """
+    send_email(order, subject, message_template)
+
 
