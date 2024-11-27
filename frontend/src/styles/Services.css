@@ -1,5 +1,12 @@
 /* frontend/src/styles/Services.css */
 
+.service-list-container {
+  padding-top: 120px; 
+  padding-bottom: 60px;
+  max-width: 1140px; 
+  margin: 0 auto; 
+}
+
 .container {
   padding-top: 120px; 
 }

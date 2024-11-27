@@ -19,12 +19,13 @@ function CustomSolutions() {
 
       <p className="text-center mb-4">
         <strong>Why Choose Us?</strong>
-        <ul className="list-unstyled">
-          <li>✅ Expertise Across Technologies</li>
-          <li>✅ Custom Solutions Tailored to Your Goals</li>
-          <li>✅ Speed, Quality, and a Personalized Approach</li>
-        </ul>
       </p>
+      <ul className="list-unstyled text-center">
+        <li>✅ Expertise Across Technologies</li>
+        <li>✅ Custom Solutions Tailored to Your Goals</li>
+        <li>✅ Speed, Quality, and a Personalized Approach</li>
+      </ul>
+
 
       <p className="text-center mb-5">
         Let’s transform your ideas into impactful, functional results. 

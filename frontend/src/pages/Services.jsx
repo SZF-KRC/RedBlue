@@ -9,7 +9,7 @@ import csharpImage from "../pictures/csharp.jpg";
 
 function Services() {
   return (
-    <div className="container py-5"> 
+    <div className="service-list-container"> 
       <h1 className="text-center mb-5 mt-5 page-title">Start Your Programming Journey with the Most Popular Languages</h1>
 
       {/* Java Section */}

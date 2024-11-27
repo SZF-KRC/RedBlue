@@ -2,7 +2,7 @@
 
 header {
     background-color: white;
-    padding: 20px;
+    padding: 0 20px;
     position: fixed;
     width: 100%;
     top: 0;
@@ -17,7 +17,7 @@ header {
   }
   
   .logo {
-    height: 50px;
+    height: 150px;
   }
   
   nav ul {
